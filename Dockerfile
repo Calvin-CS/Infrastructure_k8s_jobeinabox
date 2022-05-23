@@ -13,7 +13,7 @@ LABEL \
     org.opencontainers.image.documentation="https://github.com/trampgeek/jobeinabox" \
     org.opencontainers.image.source="https://github.com/CalvinCS/Infrastructure_docker_jobeinabox"
 
-ARG TZ=Pacific/Auckland
+ARG TZ=US/Michigan
 # Set up the (apache) environment variables
 ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
