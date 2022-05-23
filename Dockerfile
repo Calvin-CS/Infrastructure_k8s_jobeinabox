@@ -77,7 +77,7 @@ RUN ln -snf /usr/share/zoneinfo/"$TZ" /etc/localtime && \
     sed -i 's/expose_php\ =\ On/expose_php\ =\ Off/g' /etc/php/7.4/cli/php.ini && \
     mkdir -p /var/crash && \
     chmod 777 /var/crash && \
-    echo '<!DOCTYPE html><html lang="en"><title>Jobe</title><h1>Jobe</h1></html>' > /var/www/html/index.html && \
+    echo '<!DOCTYPE html><html lang="en"><title>CodeRunnerSandbox</title><h3>Contact <a href='mailto:cpsc-admin@calvin.edu'>cpsc-admin@calvin.edu</a>.</h3></html>' > /var/www/html/index.html && \
     git clone https://github.com/trampgeek/jobe.git /var/www/html/jobe && \
     apache2ctl start && \
     cd /var/www/html/jobe && \
