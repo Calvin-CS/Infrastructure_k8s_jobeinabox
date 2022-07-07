@@ -34,3 +34,37 @@ jobs:
           context: .
           tags: ${{secrets.ACR_NAME}}/jobeinabox:latest,${{secrets.ACR_NAME}}/jobeinabox:${{ steps.fetch_version.outputs.TAG }}
           push: true
+          
+  deploy:
+    runs-on: ubuntu-20.04
+    needs: build_push_image
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Helm
+        uses: Azure/setup-helm@v1
+        with:
+          version: v3.9.0
+
+      - name: Get AKS Credentials
+        uses: Azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          # Resource group name
+          resource-group: CS_Infrastructure_AKS
+          # AKS cluster name
+          cluster-name: Infrastructure
+
+      - name: Run Helm Deploy
+        run: |
+          helm upgrade \
+            --install \
+            --create-namespace \
+            --atomic \
+            --wait \
+            --namespace production \
+            jobeinabox \
+            ./kubernetes/jobeinabox \
+            --set image.repository=${{ secrets.ACR_NAME }} \
+            --set image.tag=${GITHUB_REF##*/}
