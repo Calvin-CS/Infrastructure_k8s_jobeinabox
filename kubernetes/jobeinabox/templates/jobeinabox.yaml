@@ -16,16 +16,16 @@ spec:
       containers:
       - name: jobeinabox
         image: {{ .Values.image.registry }}/{{ .Values.image.name }}:{{ default "latest" .Values.image.tag }}
-	resources:
+        resources:
             requests:
               cpu: 100m
               memory: 128Mi
             limits:
               cpu: 500m
               memory: 512Mi
-          ports:
-            - containerPort: 80
-              name: http
+        ports:
+        - containerPort: 80
+          name: http
 ---
 apiVersion: v1
 kind: Service
@@ -34,6 +34,10 @@ metadata:
   namespace: {{ default "staging" .Release.Namespace }}
 spec:
   type: ClusterIP
-  ports: 80
+  ports: 
+  - port: 80
+    protocol: TCP
+    targetPort: http
+    name: http
   selector:
     app: jobeinabox
