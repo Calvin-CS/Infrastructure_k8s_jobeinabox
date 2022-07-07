@@ -12,16 +12,15 @@ spec:
   tls:
   - hosts:
     - jobe{{- if ne .Release.Namespace "production" }}-{{ default "staging" .Release.Namespace }}{{- end }}.k8s.cs.calvin.edu
-    secretName: tls-secret
+    secretName: tls-secret-jobe-{{ default "staging" .Release.Namespace }}
   rules:
   - host: jobe-{{ default "staging" .Release.Namespace }}{{ .Values.dns.name }}
     http:
       paths:
-      - path: /(.*)
+      - path: /
         pathType: Prefix
         backend:
           service:
             name: jobeinabox
             port:
-              number: 80
-
+              name: http
