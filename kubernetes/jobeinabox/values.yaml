@@ -1,0 +1,6 @@
+image:
+  registry: calvincs.azurecr.io
+  name: jobeinabox
+  tag: latest
+dns:
+  name: k8s.cs.calvin.edu

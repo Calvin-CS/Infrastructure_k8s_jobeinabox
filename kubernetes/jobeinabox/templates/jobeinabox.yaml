@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jobeinabox  
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -14,7 +15,7 @@ spec:
     spec:
       containers:
       - name: jobeinabox
-        image: calvincs.azurecr.io
+        image: {{ .Values.image.registry }}/{{ .Values.image.name }}:{{ default "latest" .Values.image.tag }}
 	resources:
             requests:
               cpu: 100m
@@ -30,6 +31,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: jobeinabox
+  namespace: {{ default "staging" .Release.Namespace }}
 spec:
   type: ClusterIP
   ports: 80
