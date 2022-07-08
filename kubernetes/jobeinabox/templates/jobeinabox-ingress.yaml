@@ -1,26 +1,26 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: jobe
+  name: jobe-{{ default "staging" .Release.Namespace }}-ingress
   namespace: {{ default "staging" .Release.Namespace }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/use-regex: "true"
+    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
-  ingressClassName: nginx
   tls:
   - hosts:
     - jobe{{- if ne .Release.Namespace "production" }}-{{ default "staging" .Release.Namespace }}{{- end }}.k8s.cs.calvin.edu
     secretName: tls-secret-jobe-{{ default "staging" .Release.Namespace }}
   rules:
-  - host: jobe-{{ default "staging" .Release.Namespace }}{{ .Values.dns.name }}
+  - host: jobe-{{ default "staging" .Release.Namespace }}.{{ .Values.dns.name }}
     http:
       paths:
-      - path: /
+      - path: /(.*)
         pathType: Prefix
         backend:
           service:
-            name: jobeinabox
+            name: jobeinabox-{{ default "staging" .Release.Namespace }}
             port:
-              name: http
+              number: 80
