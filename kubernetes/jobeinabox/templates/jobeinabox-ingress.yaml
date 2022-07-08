@@ -11,10 +11,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - jobe{{- if ne .Release.Namespace "production" }}-{{ default "staging" .Release.Namespace }}{{- end }}.k8s.cs.calvin.edu
+    - jobe{{- if ne .Release.Namespace "production" }}-{{ default "staging" .Release.Namespace }}{{- end }}.{{ .Values.dns.name }}
     secretName: tls-secret-jobe-{{ default "staging" .Release.Namespace }}
   rules:
-  - host: jobe-{{ default "staging" .Release.Namespace }}.{{ .Values.dns.name }}
+  - host: jobe{{- if ne .Release.Namespace "production" }}-{{ default "staging" .Release.Namespace }}{{- end }}.{{ .Values.dns.name }}
     http:
       paths:
       - path: /(.*)
