@@ -2,7 +2,7 @@
 # With thanks to David Bowes (d.h.bowes@lancaster.ac.uk) who did all the hard work
 # on this originally.
 
-FROM openjdk:17-jdk AS jdk
+FROM openjdk:18-jdk AS jdk
 FROM docker.io/ubuntu:20.04
 
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
@@ -20,14 +20,14 @@ ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 ENV APACHE_LOCK_DIR /var/lock/apache2
 ENV APACHE_PID_FILE /var/run/apache2.pid
-ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-18-openjdk-amd64
 ENV LANG C.UTF-8
 
 # Copy OpenJDK into Ubuntu container and setup via update-alternatives
-COPY --from=jdk /usr/java/openjdk-17 /usr/lib/jvm/java-17-openjdk-amd64
-RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-17-openjdk-amd64/bin/java 20 && \
+COPY --from=jdk /usr/java/openjdk-18 /usr/lib/jvm/java-18-openjdk-amd64
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-18-openjdk-amd64/bin/java 20 && \
     update-alternatives --auto java && \
-    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac 20 && \
+    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-18-openjdk-amd64/bin/javac 20 && \
     update-alternatives --auto javac
 
 # Copy apache virtual host file for later use
