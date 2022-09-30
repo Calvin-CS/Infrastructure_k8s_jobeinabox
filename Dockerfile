@@ -94,5 +94,5 @@ EXPOSE 80
 HEALTHCHECK --interval=5m --timeout=2s \
     CMD /usr/bin/python3 /var/www/html/jobe/minimaltest.py || exit 1
 
-# Start apache
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+# Start apache, within the default conda environment.
+CMD ["conda", "run", "--no-capture-output", "/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
