@@ -78,7 +78,7 @@ RUN ln -snf /usr/share/zoneinfo/"$TZ" /etc/localtime && \
     mkdir -p /var/crash && \
     chmod 777 /var/crash && \
     echo '<!DOCTYPE html><html lang="en"><title>CodeRunnerSandbox</title><h3>Contact <a href='mailto:cpsc-admin@calvin.edu'>cpsc-admin@calvin.edu</a>.</h3></html>' > /var/www/html/index.html && \
-    git clone https://github.com/trampgeek/jobe.git /var/www/html/jobe && \
+    git clone https://github.com/Calvin-CS/jobe.git /var/www/html/jobe && \
     apache2ctl start && \
     cd /var/www/html/jobe && \
     /usr/bin/python3 /var/www/html/jobe/install && \
@@ -94,5 +94,5 @@ EXPOSE 80
 HEALTHCHECK --interval=5m --timeout=2s \
     CMD /usr/bin/python3 /var/www/html/jobe/minimaltest.py || exit 1
 
-# Start apache
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+# Start apache, within the default conda environment.
+CMD ["conda", "run", "--no-capture-output", "/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
