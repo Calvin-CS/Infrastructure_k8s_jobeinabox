@@ -64,7 +64,7 @@ RUN ln -snf /usr/share/zoneinfo/"$TZ" /etc/localtime && \
         sudo \
         tzdata \
         unzip && \
-    python3 -m pip install pylint && \
+    python3 -m pip install pylint exec-wrappers && \
     pylint --reports=no --score=n --generate-rcfile > /etc/pylintrc && \
     ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
     ln -sf /proc/self/fd/1 /var/log/apache2/error.log && \
@@ -83,6 +83,7 @@ RUN ln -snf /usr/share/zoneinfo/"$TZ" /etc/localtime && \
     cd /var/www/html/jobe && \
     /usr/bin/python3 /var/www/html/jobe/install && \
     chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html && \
+    mkdir -p /usr/local/lib/conda-wrap && create-wrappers -t conda --files-to-wrap /opt/anaconda/bin/python --dest-dir /usr/local/lib/conda-wrap --conda-env-dir /opt/anaconda && \
     apt-get -y autoremove --purge && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/*
@@ -94,5 +95,5 @@ EXPOSE 80
 HEALTHCHECK --interval=5m --timeout=2s \
     CMD /usr/bin/python3 /var/www/html/jobe/minimaltest.py || exit 1
 
-# Start apache, within the default conda environment.
-CMD ["/opt/anaconda/bin/conda", "run", "--no-capture-output", "/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+# Start apache
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
