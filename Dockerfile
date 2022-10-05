@@ -5,6 +5,9 @@
 FROM openjdk:18-jdk AS jdk
 FROM docker.io/ubuntu:20.04
 
+# Builddate
+ARG BUILDDATE=20221005-01
+
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL \
     org.opencontainers.image.authors="richard.lobb@canterbury.ac.nz,j.hoedjes@hva.nl,d.h.bowes@herts.ac.uk,cwieri39@calvin.edu" \
