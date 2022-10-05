@@ -6,7 +6,7 @@ metadata:
   annotations: 
     "builddate": "20220708-3"
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: jobeinabox-{{ default "staging" .Release.Namespace }}
