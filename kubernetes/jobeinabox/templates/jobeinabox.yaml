@@ -6,7 +6,7 @@ metadata:
   annotations: 
     releaseTime: {{ dateInZone "2006-01-02 15:04:05Z" (now) "UTC"| quote }}
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: jobeinabox-{{ default "staging" .Release.Namespace }}
