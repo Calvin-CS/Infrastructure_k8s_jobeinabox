@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: jobeinabox-{{ default "staging" .Release.Namespace }}
   namespace: {{ default "staging" .Release.Namespace }}
-  annotations: 
-    releaseTime: {{ dateInZone "2006-01-02 15:04:05Z" (now) "UTC"| quote }}
 spec:
   replicas: 1
   selector:
@@ -15,6 +13,7 @@ spec:
       labels:
         app: jobeinabox-{{ default "staging" .Release.Namespace }}
       annotations:
+        releaseTime: {{ dateInZone "2006-01-02 15:04:05Z" (now) "UTC"| quote }}
         checksum/config: {{ include (print $.Template.BasePath "/jobeinabox-ingress.yaml") . | sha256sum }}
     spec:
       containers:
