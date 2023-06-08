@@ -24,6 +24,7 @@ ENV APACHE_LOG_DIR /var/log/apache2
 ENV APACHE_LOCK_DIR /var/lock/apache2
 ENV APACHE_PID_FILE /var/run/apache2.pid
 ENV JAVA_HOME /usr/lib/jvm/java-18-openjdk-amd64
+ENV R_HOME /opt/R/4.2.2
 ENV LANG C.UTF-8
 
 # Copy OpenJDK into Ubuntu container and setup via update-alternatives
