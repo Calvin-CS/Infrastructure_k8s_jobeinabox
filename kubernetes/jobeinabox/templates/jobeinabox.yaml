@@ -33,17 +33,14 @@ spec:
           readOnly: true
       volumes:
       - name: mountr
-        nfs:
-          path: /export/r
-          server: aznfs-int.cs.calvin.edu
+        persistentVolumeClaim:
+          claimName: pvc-nfs-r-int-r-{{ default "staging" .Release.Namespace }}
       - name: mountanaconda
-        nfs:
-          path: /export/anaconda
-          server: aznfs-int.cs.calvin.edu
+        persistentVolumeClaim:
+          claimName: pvc-nfs-r-int-anaconda-{{ default "staging" .Release.Namespace }}
       - name: mountpython
-        nfs:
-          path: /export/python
-          server: aznfs-int.cs.calvin.edu
+        persistentVolumeClaim:
+          claimName: pvc-nfs-r-int-python-{{ default "staging" .Release.Namespace }}
 ---
 apiVersion: v1
 kind: Service
