@@ -6,7 +6,7 @@ FROM openjdk:18-jdk AS jdk
 FROM docker.io/ubuntu:20.04
 
 # Builddate
-ARG BUILDDATE=20230201-1
+ARG BUILDDATE=20241202-1
 
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL \
