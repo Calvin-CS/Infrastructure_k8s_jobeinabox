@@ -16,8 +16,6 @@ spec:
         releaseTime: {{ dateInZone "2006-01-02 15:04:05Z" (now) "UTC"| quote }}
         checksum/config: {{ include (print $.Template.BasePath "/jobeinabox-ingress.yaml") . | sha256sum }}
     spec:
-      nodeSelector:
-        CSInfrastructure: "true"
       containers:
       - name: jobeinabox-{{ default "staging" .Release.Namespace }}
         image: {{ .Values.image.registry }}/{{ .Values.image.name }}:{{ default "latest" .Values.image.tag }}
@@ -27,9 +25,9 @@ spec:
         - mountPath: /opt/R
           name: mountr
           readOnly: true
-        - mountPath: /opt/anaconda
-          name: mountanaconda
-          readOnly: true
+        # - mountPath: /opt/anaconda
+        #   name: mountanaconda
+        #   readOnly: true
         - mountPath: /opt/python
           name: mountpython
           readOnly: true
