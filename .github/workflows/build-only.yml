@@ -1,0 +1,47 @@
+name: Only build latest image
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build_push_image:
+    runs-on: ubuntu:noble
+    env:
+      IMAGE_NAME: ${{secrets.ACR_NAME}}/jobeinabox
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: benjlevesque/short-sha@v3.0
+        id: short-sha
+
+      - name: Docker ACR Login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_NAME }}
+          username: ${{ secrets.ACR_LOGIN }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && 'true' || 'false' }},priority=100
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/main' && 'false' || 'true' }},priority=100
+            type=raw,value=${{ github.ref_name }}-${{ steps.short-sha.outputs.sha }},priority=200
+
+      - name: Build and push production images
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
