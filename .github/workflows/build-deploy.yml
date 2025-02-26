@@ -1,0 +1,84 @@
+name: Build and deploy the latest build
+
+on:
+  push:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build_push_image:
+    runs-on: ubuntu:noble
+    env:
+      IMAGE_NAME: ${{secrets.ACR_NAME}}/jobeinabox
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: benjlevesque/short-sha@v3.0
+        id: short-sha
+
+      - name: Docker ACR Login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_NAME }}
+          username: ${{ secrets.ACR_LOGIN }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && 'true' || 'false' }},priority=100
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/main' && 'false' || 'true' }},priority=100
+            type=raw,value=${{ github.ref_name }}-${{ steps.short-sha.outputs.sha }},priority=200
+
+      - name: Build and push production images
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+
+  deploy:
+    runs-on: ubuntu:noble
+    needs: build_push_image
+    env:
+      NAMESPACE: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: benjlevesque/short-sha@v3.0
+        id: short-sha    
+      
+      - name: Configure Kubeconfig
+        uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K3S_ONPREM_KUBECONFIG }}
+        id: setcontext    
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: latest   
+
+      - name: Run Helm Deploy
+        run: |
+          helm upgrade \
+            --install \
+            --atomic \
+            --wait \
+            --namespace ${{ env.NAMESPACE }} \
+            jobeinabox \
+           ./kubernetes/jobeinabox \
+            --set image.repository=${{ secrets.ACR_NAME }} \
+            --set image.tag=${{ github.ref == 'refs/heads/main' && 'latest' || format('{0}-{1}', github.ref_name, steps.short-sha.outputs.sha) }}

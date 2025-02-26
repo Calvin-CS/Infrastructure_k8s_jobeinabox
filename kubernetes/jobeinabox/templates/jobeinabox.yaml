@@ -16,8 +16,6 @@ spec:
         releaseTime: {{ dateInZone "2006-01-02 15:04:05Z" (now) "UTC"| quote }}
         checksum/config: {{ include (print $.Template.BasePath "/jobeinabox-ingress.yaml") . | sha256sum }}
     spec:
-      nodeSelector:
-        CSInfrastructure: "true"
       containers:
       - name: jobeinabox-{{ default "staging" .Release.Namespace }}
         image: {{ .Values.image.registry }}/{{ .Values.image.name }}:{{ default "latest" .Values.image.tag }}
@@ -27,31 +25,55 @@ spec:
         - mountPath: /opt/R
           name: mountr
           readOnly: true
-        - mountPath: /opt/anaconda
-          name: mountanaconda
-          readOnly: true
         - mountPath: /opt/python
           name: mountpython
           readOnly: true
       volumes:
       - name: mountr
         persistentVolumeClaim:
-          claimName: pvc-nfs-r-int-r-{{ default "staging" .Release.Namespace }}
-      - name: mountanaconda
-        persistentVolumeClaim:
-          claimName: pvc-nfs-r-int-anaconda-{{ default "staging" .Release.Namespace }}
+          claimName: pvc-software-r-{{ default "staging" .Release.Namespace }}
       - name: mountpython
         persistentVolumeClaim:
-          claimName: pvc-nfs-r-int-python-{{ default "staging" .Release.Namespace }}
+          claimName: pvc-software-python-{{ default "staging" .Release.Namespace }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: jobeinabox-{{ default "staging" .Release.Namespace }}
   namespace: {{ default "staging" .Release.Namespace }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: jobe{{- if ne .Release.Namespace "production" }}-{{ default "staging" .Release.Namespace }}{{- end }}.{{ .Values.dns.name }}
+    external-dns.alpha.kubernetes.io/ttl: "60"
 spec:
   type: ClusterIP
   ports:
   - port: 80
   selector:
     app: jobeinabox-{{ default "staging" .Release.Namespace }}
+---
+{{ if eq .Release.Namespace "production" }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: jobeinabox-{{ default "staging" .Release.Namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: jobeinabox-{{ default "staging" .Release.Namespace }}
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 65
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 65
+{{- end }}

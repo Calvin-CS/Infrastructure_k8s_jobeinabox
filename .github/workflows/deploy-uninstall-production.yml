@@ -1,0 +1,33 @@
+name: Uninstall production
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu:noble
+    env:
+      NAMESPACE: production
+      IMAGETAG: latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: benjlevesque/short-sha@v3.0
+        id: short-sha    
+      
+      - name: Configure Kubeconfig
+        uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K3S_ONPREM_KUBECONFIG }}
+        id: setcontext    
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: latest   
+
+      - name: Run Helm Uninstall
+        run: |
+          helm uninstall --namespace ${{ env.NAMESPACE}} jobeinabox
