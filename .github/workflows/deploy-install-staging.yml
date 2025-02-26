@@ -26,7 +26,19 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4.2.0
         with:
-          version: latest   
+          version: latest
+
+      - name: Make Wireguard connection
+        run: |
+          sudo apt install -y wireguard
+          echo "${{ secrets.WG_PRIVATEKEY }}" > privatekey
+          sudo ip link add dev wg0 type wireguard
+          sudo ip address add dev wg0 172.16.201.2/29 peer 172.16.201.1
+          sudo wg set wg0 listen-port 48123 private-key privatekey peer Et85fpcfQY6PdPE95gNo/J1D+FqCG6g88Ly59CZTfGw= allowed-ips ${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }}
+          sudo ip link set up dev wg0
+          sleep 5
+          ping 153.106.195.1
+          ping k3s1.cs.calvin.edu          
 
       - name: Run Helm Deploy
         run: |
