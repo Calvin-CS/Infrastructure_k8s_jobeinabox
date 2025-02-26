@@ -47,6 +47,7 @@ jobs:
           echo "**** Sleep 5 seconds ****"
           sleep 5
           echo "**** Show wg0 status ****"
+          sudo ip a
           sudo wg       
 
       - name: Run Helm Deploy
