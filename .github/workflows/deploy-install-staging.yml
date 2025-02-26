@@ -42,10 +42,10 @@ jobs:
           sudo wg set wg0 listen-port 48123 private-key privatekey peer Et85fpcfQY6PdPE95gNo/J1D+FqCG6g88Ly59CZTfGw= allowed-ips ${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }}
           echo "**** Wireguard up wg0 ****"
           sudo ip link set up dev wg0
-          echo "Sleep 5 seconds"
+          echo "**** Sleep 5 seconds ****"
           sleep 5
           echo "**** Show wg0 status ****"
-          wg
+          sudo wg
           echo "**** Ping for debugging ****"
           ping 153.106.195.1
           ping k3s1.cs.calvin.edu          
