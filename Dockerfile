@@ -2,8 +2,13 @@
 # With thanks to David Bowes (d.h.bowes@lancaster.ac.uk) who did all the hard work
 # on this originally.
 
+
+
 FROM openjdk:24-jdk AS jdk
 FROM ubuntu:noble
+
+ENV JAVA_VERSION=24
+ENV R_VERSION=4.4.2
 
 # Builddate
 ARG BUILDDATE=20250225-1
@@ -17,23 +22,26 @@ LABEL \
     org.opencontainers.image.source="https://github.com/CalvinCS/Infrastructure_k8s_jobeinabox"
 
 ARG TZ=US/Michigan
+
 # Set up the (apache) environment variables
 ENV APACHE_RUN_USER="www-data"
 ENV APACHE_RUN_GROUP="www-data"
 ENV APACHE_LOG_DIR="/var/log/apache2"
 ENV APACHE_LOCK_DIR="/var/lock/apache2"
 ENV APACHE_PID_FILE="/var/run/apache2.pid"
-ENV JAVA_HOME="/usr/lib/jvm/java-24-openjdk-amd64"
-ENV R_VERSION="4.4.2"
+ENV JAVA_SRC="/usr/java/openjdk-${JAVA_VERSION}"
+ENV JAVA_HOME="/usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64"
 ENV R_HOME="/opt/R/${R_VERSION}"
 ENV LANG="C.UTF-8"
-ENV PATH="/opt/python/bin:/opt/R/${R_VERSION}/bin:${PATH}"
+ENV PATH="/opt/python/bin:/opt/R/${R_VERSION}/bin:$PATH"
+
+#RUN echo "JAVA_VER: ${JAVA_VERSION} JAVA_SRC: ${JAVA_SRC} R_HOME: ${R_HOME} PATH: ${PATH}"
 
 # Copy OpenJDK into Ubuntu container and setup via update-alternatives
-COPY --from=jdk /usr/java/openjdk-24 /usr/lib/jvm/java-24-openjdk-amd64
-RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-24-openjdk-amd64/bin/java 20 && \
+COPY --from=jdk ${JAVA_SRC} ${JAVA_HOME}
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64/bin/java 20 && \
     update-alternatives --auto java && \
-    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-24-openjdk-amd64/bin/javac 20 && \
+    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64/bin/javac 20 && \
     update-alternatives --auto javac
 
 # Copy apache virtual host file for later use
@@ -51,11 +59,11 @@ COPY container-test.sh /
 # Configure php
 # Get and install jobe
 # Clean up
-RUN ln -snf /usr/share/zoneinfo/"$TZ" /etc/localtime && \
-    echo "$TZ" > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
+    echo "${TZ}" > /etc/timezone
 
-RUN apt update && \
-    DEBIAN_FRONTEND=none apt --no-install-recommends install -yq \
+RUN apt update -y -qq && \
+    DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y -qq \
         acl \
         apache2 \
         build-essential \
@@ -81,7 +89,7 @@ RUN python3 -m pip install exec-wrappers --break-system-packages && \
     ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
     ln -sf /proc/self/fd/1 /var/log/apache2/error.log && \
     sed -i "s/export LANG=C/export LANG=$LANG/" /etc/apache2/envvars && \
-    echo "export LD_LIBRARY_PATH=/opt/R/${R_VERSION}/lib/R/lib:/usr/local/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/java-24-openjdk-amd64/lib/server:${LD_LIBRARY_PATH}" >> /etc/apache2/envvars && \
+    echo "export LD_LIBRARY_PATH=/opt/R/${R_VERSION}/lib/R/lib:/usr/local/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64/lib/server:${LD_LIBRARY_PATH}" >> /etc/apache2/envvars && \
     sed -i '1 i ServerName localhost' /etc/apache2/apache2.conf && \
     sed -i 's/ServerTokens\ OS/ServerTokens \Prod/g' /etc/apache2/conf-enabled/security.conf && \
     sed -i 's/ServerSignature\ On/ServerSignature \Off/g' /etc/apache2/conf-enabled/security.conf && \
