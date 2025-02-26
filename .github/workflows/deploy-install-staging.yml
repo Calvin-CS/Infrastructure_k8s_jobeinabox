@@ -32,23 +32,22 @@ jobs:
         run: |
           echo "**** Install Wireguard ****"
           sudo apt install -y wireguard
+          echo "**** Runner IP configuration ****"
+          sudo ip a
           echo "**** Add Wireguard private key ****"
           echo "${{ secrets.WG_PRIVATEKEY }}" > privatekey
           echo "**** Wireguard add dev wg0 ****"          
           sudo ip link add dev wg0 type wireguard
           echo "**** Wireguard add IP information up ****"
-          sudo ip address add dev wg0 172.16.201.2/29 peer 172.16.201.1
+          sudo ip address add dev wg0 172.16.201.3/29 peer 172.16.201.1
           echo "**** Wireguard set peer information ****"
-          sudo wg set wg0 listen-port 48123 private-key privatekey peer Et85fpcfQY6PdPE95gNo/J1D+FqCG6g88Ly59CZTfGw= allowed-ips ${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }}
+          sudo wg set wg0 listen-port 48123 private-key privatekey peer uFl3byQphA02N5nR29v8IjiFeL15mN+mWrmAFQ/TMGk= allowed-ips ${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }}
           echo "**** Wireguard up wg0 ****"
           sudo ip link set up dev wg0
           echo "**** Sleep 5 seconds ****"
           sleep 5
           echo "**** Show wg0 status ****"
-          sudo wg
-          echo "**** Ping for debugging ****"
-          ping 153.106.195.1
-          ping k3s1.cs.calvin.edu          
+          sudo wg       
 
       - name: Run Helm Deploy
         run: |
