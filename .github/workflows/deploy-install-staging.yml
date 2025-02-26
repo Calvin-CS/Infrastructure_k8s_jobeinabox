@@ -35,13 +35,13 @@ jobs:
           echo "**** Runner IP configuration ****"
           sudo ip a
           echo "**** Add Wireguard private key ****"
-          echo "${{ secrets.WG_PRIVATEKEY }}" > privatekey
+          echo "${{ secrets.WG_PRIVATEKEY }}" > /tmp/wgprivatekey
           echo "**** Wireguard add dev wg0 ****"          
           sudo ip link add dev wg0 type wireguard
           echo "**** Wireguard add IP information up ****"
           sudo ip address add dev wg0 172.16.200.3/29
           echo "**** Wireguard set peer information ****"
-          sudo wg set wg0 listen-port 48123 private-key privatekey peer uFl3byQphA02N5nR29v8IjiFeL15mN+mWrmAFQ/TMGk= allowed-ips 172.16.200.0/29,${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }}
+          sudo wg set wg0 listen-port 51820 private-key /tmp/wgprivatekey peer uFl3byQphA02N5nR29v8IjiFeL15mN+mWrmAFQ/TMGk= allowed-ips 172.16.200.0/29,${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }} persistent-keepalive 15
           echo "**** Wireguard up wg0 ****"
           sudo ip link set up dev wg0
           echo "**** Sleep 5 seconds ****"
