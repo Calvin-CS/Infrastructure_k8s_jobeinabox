@@ -44,6 +44,8 @@ jobs:
           sudo wg set wg0 listen-port 51820 private-key /tmp/wgprivatekey peer uFl3byQphA02N5nR29v8IjiFeL15mN+mWrmAFQ/TMGk= allowed-ips 172.16.200.0/29,${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }} persistent-keepalive 15
           echo "**** Wireguard up wg0 ****"
           sudo ip link set up dev wg0
+          echo "**** Wireguard add routes ****"
+          sudo ip route add ${{ secrets.WG_ALLOWEDIPS }} via 172.16.200.1 dev wg0
           echo "**** Sleep 5 seconds ****"
           sleep 5
           echo "**** Show wg0 status ****"
