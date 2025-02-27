@@ -69,17 +69,16 @@ jobs:
         with:
           version: latest   
 
-      - name: Make Wireguard connection
+      - name: Install and configurure Wireguard connection
         run: |
-          sudo apt install -y wireguard
-          echo "${{ secrets.WG_PRIVATEKEY }}" > privatekey
+          sudo apt install -y -qq wireguard
+          echo "${{ secrets.WG_PRIVATEKEY }}" > /tmp/wgprivatekey    
           sudo ip link add dev wg0 type wireguard
-          sudo ip address add dev wg0 172.16.201.2/29 peer 172.16.201.1
-          sudo wg set wg0 listen-port 48123 private-key privatekey peer Et85fpcfQY6PdPE95gNo/J1D+FqCG6g88Ly59CZTfGw= allowed-ips ${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }}
+          sudo ip address add dev wg0 172.16.200.3/29
+          sudo wg set wg0 listen-port 51820 private-key /tmp/wgprivatekey peer uFl3byQphA02N5nR29v8IjiFeL15mN+mWrmAFQ/TMGk= allowed-ips 172.16.200.0/29,${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }} persistent-keepalive 15
           sudo ip link set up dev wg0
-          sleep 5
-          ping 153.106.195.1
-          ping k3s1.cs.calvin.edu
+          sudo ip route add ${{ secrets.WG_ALLOWEDIPS }} via 172.16.200.1 dev wg0
+          sudo wg      
 
       - name: Run Helm Deploy
         run: |

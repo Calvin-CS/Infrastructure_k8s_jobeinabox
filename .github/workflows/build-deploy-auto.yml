@@ -1,7 +1,7 @@
 name: Auto - Build and deploy the latest build
 
 on:
-  #push:
+  push:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -69,7 +69,18 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4.2.0
         with:
-          version: latest   
+          version: latest
+
+      - name: Install and configurure Wireguard connection
+        run: |
+          sudo apt install -y -qq wireguard
+          echo "${{ secrets.WG_PRIVATEKEY }}" > /tmp/wgprivatekey    
+          sudo ip link add dev wg0 type wireguard
+          sudo ip address add dev wg0 172.16.200.3/29
+          sudo wg set wg0 listen-port 51820 private-key /tmp/wgprivatekey peer uFl3byQphA02N5nR29v8IjiFeL15mN+mWrmAFQ/TMGk= allowed-ips 172.16.200.0/29,${{ secrets.WG_ALLOWEDIPS }} endpoint ${{ secrets.WG_HOST }}:${{ secrets.WG_PORT }} persistent-keepalive 15
+          sudo ip link set up dev wg0
+          sudo ip route add ${{ secrets.WG_ALLOWEDIPS }} via 172.16.200.1 dev wg0
+          sudo wg
 
       - name: Run Helm Deploy
         run: |
