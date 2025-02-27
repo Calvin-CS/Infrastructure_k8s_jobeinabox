@@ -31,7 +31,7 @@ jobs:
       - name: Make Wireguard connection
         run: |
           echo "**** Install Wireguard ****"
-          sudo apt install -y wireguard
+          sudo apt install -y wireguard nmap
           echo "**** Runner IP configuration ****"
           sudo ip a
           echo "**** Add Wireguard private key ****"
@@ -48,7 +48,13 @@ jobs:
           sleep 5
           echo "**** Show wg0 status ****"
           sudo ip a
-          sudo wg       
+          sudo wg
+          echo "**** Show ip route *****"
+          sudo ip route
+          echo "**** Show nmap state ****"
+          sudo nmap -sT -p6443 k3s1.cs.calvin.edu
+          sudo nmap -sT -p6443 k3s2.cs.calvin.edu
+          sudo nmap -sT -p6443 k3s3.cs.calvin.edu
 
       - name: Run Helm Deploy
         run: |
