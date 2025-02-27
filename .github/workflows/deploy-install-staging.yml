@@ -31,9 +31,7 @@ jobs:
       - name: Make Wireguard connection
         run: |
           echo "**** Install Wireguard ****"
-          sudo apt install -y wireguard nmap
-          echo "**** Runner IP configuration ****"
-          sudo ip a
+          sudo apt install -y wireguard
           echo "**** Add Wireguard private key ****"
           echo "${{ secrets.WG_PRIVATEKEY }}" > /tmp/wgprivatekey
           echo "**** Wireguard add dev wg0 ****"          
@@ -46,20 +44,8 @@ jobs:
           sudo ip link set up dev wg0
           echo "**** Wireguard add routes ****"
           sudo ip route add ${{ secrets.WG_ALLOWEDIPS }} via 172.16.200.1 dev wg0
-          echo "**** Sleep 5 seconds ****"
-          sleep 5
           echo "**** Show wg0 status ****"
-          sudo ip a
           sudo wg
-          echo "**** Show ip route *****"
-          sudo ip route
-          echo "**** Try some pings *****"
-          ping -c 4 172.16.200.1
-          ping -c 4 153.106.195.1
-          ping -c 4 k3s1.cs.calvin.edu
-          echo "**** Show nmap state ****"
-          sudo nmap -sT -p0- k3s1.cs.calvin.edu
-
 
       - name: Run Helm Deploy
         run: |
