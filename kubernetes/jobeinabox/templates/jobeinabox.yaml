@@ -47,9 +47,6 @@ kind: Service
 metadata:
   name: jobeinabox-{{ default "staging" .Release.Namespace }}
   namespace: {{ default "staging" .Release.Namespace }}
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: jobe{{- if ne .Release.Namespace "production" }}-{{ default "staging" .Release.Namespace }}{{- end }}.{{ .Values.dns.name }}
-    external-dns.alpha.kubernetes.io/ttl: "60"
 spec:
   type: ClusterIP
   ports:
