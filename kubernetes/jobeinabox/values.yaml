@@ -8,3 +8,4 @@ rollingUpdate:
   enabled: true
   maxSurge: "100%"
   maxUnavailable: "50%"
+imagePullSecrets: [{name: regcred-dockerhub},{name: regcred-acr}]

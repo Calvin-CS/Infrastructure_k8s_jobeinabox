@@ -28,13 +28,19 @@ spec:
         - mountPath: /opt/python
           name: mountpython
           readOnly: true
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}          
       volumes:
       - name: mountr
         persistentVolumeClaim:
           claimName: pvc-software-r-{{ default "staging" .Release.Namespace }}
+          readOnly: true
       - name: mountpython
         persistentVolumeClaim:
           claimName: pvc-software-python-{{ default "staging" .Release.Namespace }}
+          readOnly: true
 ---
 apiVersion: v1
 kind: Service
@@ -61,19 +67,19 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: jobeinabox-{{ default "staging" .Release.Namespace }}
-  minReplicas: 2
-  maxReplicas: 8
+  minReplicas: 1
+  maxReplicas: 4
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 65
+        averageUtilization: 75
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 65
+        averageUtilization: 75
 {{- end }}
