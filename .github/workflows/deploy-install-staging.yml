@@ -53,10 +53,15 @@ jobs:
           sudo wg
           echo "**** Show ip route *****"
           sudo ip route
+          echo "**** Try some pings *****"
+          ping -c 4 153.106.195.1
+          ping -c 4 k3s1.cs.calvin.edu
+          ping -c 4 k3s2.cs.calvin.edu
+          ping -c 4 k3s3.cs.calvin.edu
           echo "**** Show nmap state ****"
-          sudo nmap -sT -p6443 k3s1.cs.calvin.edu
-          sudo nmap -sT -p6443 k3s2.cs.calvin.edu
-          sudo nmap -sT -p6443 k3s3.cs.calvin.edu
+          sudo nmap -sT -p6443,0- k3s1.cs.calvin.edu
+          sudo nmap -sT -p6443,0- k3s2.cs.calvin.edu
+          sudo nmap -sT -p6443,0- k3s3.cs.calvin.edu
 
       - name: Run Helm Deploy
         run: |
