@@ -104,7 +104,8 @@ RUN python3 -m pip install exec-wrappers --break-system-packages && \
     cd /var/www/html/jobe && \
     /usr/bin/python3 /var/www/html/jobe/install && \
     chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html && \
-    mkdir -p /usr/local/lib/conda-wrap && create-wrappers -t conda --files-to-wrap /opt/python/bin/python --dest-dir /usr/local/lib/conda-wrap --conda-env-dir /opt/python
+    mkdir -p /usr/local/lib/conda-wrap && create-wrappers -t conda --files-to-wrap /opt/python/bin/python --dest-dir /usr/local/lib/conda-wrap --conda-env-dir /opt/python && \
+    ln -s /opt/python /opt/anaconda
 
 RUN apt-get -y autoremove --purge && \
     apt-get -y clean && \
