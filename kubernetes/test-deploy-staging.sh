@@ -8,4 +8,5 @@ helm upgrade \
 	--namespace staging \
 	jobeinabox \
 	./jobeinabox \
-	--set image.repository=calvincs.azurecr.io 
+	--set image.repository=calvincs.azurecr.io \
+	--set image.tag=staging

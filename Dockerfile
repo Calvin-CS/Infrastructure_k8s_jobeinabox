@@ -2,8 +2,6 @@
 # With thanks to David Bowes (d.h.bowes@lancaster.ac.uk) who did all the hard work
 # on this originally.
 
-
-
 FROM openjdk:24-jdk AS jdk
 FROM ubuntu:noble
 
@@ -11,7 +9,7 @@ ENV JAVA_VERSION=24
 ENV R_VERSION=4.4.2
 
 # Builddate
-ARG BUILDDATE=20250225-1
+ARG BUILDDATE=20250228-1
 
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL \
@@ -104,8 +102,7 @@ RUN python3 -m pip install exec-wrappers --break-system-packages && \
     cd /var/www/html/jobe && \
     /usr/bin/python3 /var/www/html/jobe/install && \
     chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/html && \
-    mkdir -p /usr/local/lib/conda-wrap && create-wrappers -t conda --files-to-wrap /opt/python/bin/python --dest-dir /usr/local/lib/conda-wrap --conda-env-dir /opt/python && \
-    ln -s /opt/python /opt/anaconda
+    mkdir -p /usr/local/lib/conda-wrap && create-wrappers -t conda --files-to-wrap /opt/python/bin/python --dest-dir /usr/local/lib/conda-wrap --conda-env-dir /opt/python
 
 RUN apt-get -y autoremove --purge && \
     apt-get -y clean && \
