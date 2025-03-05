@@ -35,8 +35,8 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && 'true' || 'false' }},priority=100
-            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/main' && 'false' || 'true' }},priority=100
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' && 'true' || 'false' }},priority=100
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/master' && 'false' || 'true' }},priority=100
             type=raw,value=${{ github.ref_name }}-${{ steps.short-sha.outputs.sha }},priority=200
 
       - name: Build and push production images
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: build_push_image
     env:
-      NAMESPACE: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      NAMESPACE: ${{ github.ref == 'refs/heads/master' && 'production' || 'staging' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -92,4 +92,4 @@ jobs:
             jobeinabox \
            ./kubernetes/jobeinabox \
             --set image.repository=${{ secrets.ACR_NAME }} \
-            --set image.tag=${{ github.ref == 'refs/heads/main' && 'latest' || format('{0}-{1}', github.ref_name, steps.short-sha.outputs.sha) }}
+            --set image.tag=${{ github.ref == 'refs/heads/master' && 'latest' || format('{0}-{1}', github.ref_name, steps.short-sha.outputs.sha) }}

@@ -33,8 +33,8 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && 'true' || 'false' }},priority=100
-            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/main' && 'false' || 'true' }},priority=100
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' && 'true' || 'false' }},priority=100
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/master' && 'false' || 'true' }},priority=100
             type=raw,value=${{ github.ref_name }}-${{ steps.short-sha.outputs.sha }},priority=200
 
       - name: Build and push production images
