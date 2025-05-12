@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: jobeinabox-{{ default "staging" .Release.Namespace }}
-        image: calvincs.azurecr.io/{{ .Values.image.name }}:{{ default "latest" .Values.image.tag }}
+        image: "{{- if hasPrefix "calvincs.azurecr.io/" .Values.image.name -}}{{ .Values.image.name }}:{{ .Values.image.tag }}{{- else -}}{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}{{- end }}"
         ports:
         - containerPort: 80
         resources:
