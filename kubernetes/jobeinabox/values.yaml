@@ -1,5 +1,5 @@
 image:
-  registry: calvincs.azurecr.io
+  registry: harbor.cs.calvin.edu/calvincs-private
   name: jobeinabox
   tag: latest
 dns:
@@ -8,4 +8,4 @@ rollingUpdate:
   enabled: true
   maxSurge: "100%"
   maxUnavailable: "50%"
-imagePullSecrets: [{name: regcred-dockerhub},{name: regcred-acr}]
+imagePullSecrets: [{name: regcred-dockerhub},{name: regcred-acr},{name: regcred-harbor}]
