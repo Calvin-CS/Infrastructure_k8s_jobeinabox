@@ -8,4 +8,4 @@ helm upgrade \
 	--namespace production \
 	jobeinabox \
 	./jobeinabox \
-	--set image.repository=calvincs.azurecr.io 
+	--set image.repository=harbor.cs.calvin.edu/calvincs-private 

@@ -8,5 +8,5 @@ helm upgrade \
 	--namespace staging \
 	jobeinabox \
 	./jobeinabox \
-	--set image.repository=calvincs.azurecr.io \
+	--set image.repository=harbor.cs.calvin.edu/calvincs-private \
 	--dry-run
