@@ -9,7 +9,7 @@ ENV JAVA_VERSION=24
 ENV R_VERSION=4.4.2
 
 # Builddate
-ARG BUILDDATE=20251211-1
+ARG BUILDDATE=20251211-2
 
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL \
@@ -27,7 +27,7 @@ ENV APACHE_RUN_GROUP="www-data"
 ENV APACHE_LOG_DIR="/var/log/apache2"
 ENV APACHE_LOCK_DIR="/var/lock/apache2"
 ENV APACHE_PID_FILE="/var/run/apache2.pid"
-ENV JAVA_SRC="/usr/java/openjdk"
+ENV JAVA_SRC="/opt/java/openjdk"
 ENV JAVA_HOME="/usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64"
 ENV R_HOME="/opt/R/${R_VERSION}"
 ENV LANG="C.UTF-8"
