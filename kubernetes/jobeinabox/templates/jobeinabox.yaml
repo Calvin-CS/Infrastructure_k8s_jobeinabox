@@ -15,7 +15,7 @@ spec:
         app: jobeinabox-{{ default "staging" .Release.Namespace }}
       annotations:
         releaseTime: {{ dateInZone "2006-01-02 15:04:05Z" (now) "UTC"| quote }}
-        checksum/config: {{ include (print $.Template.BasePath "/jobeinabox-ingress.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/jobeinabox-httproute.yaml") . | sha256sum }}
     spec:
       containers:
       - name: jobeinabox-{{ default "staging" .Release.Namespace }}
