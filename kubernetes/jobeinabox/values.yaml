@@ -4,8 +4,15 @@ image:
   tag: latest
 dns:
   name: k8s.cs.calvin.edu
+
+# Allowed API keys for jobeinabox access.
+# Requests must include header `X-API-KEY` matching one of these values.
+apiKeys:
+  - 738c698f-b603-4e00-9f25-f66dba16f47d
+  - c0ef7472-79ec-44a0-81d8-3096457ecb4a
+  - 40e15026-0455-487a-b49b-17e4f2e4b8fd
 rollingUpdate:
   enabled: true
   maxSurge: "100%"
   maxUnavailable: "50%"
-imagePullSecrets: [{name: regcred-dockerhub},{name: regcred-acr},{name: regcred-harbor}]
+imagePullSecrets: [{name: regcred-dockerhub},{name: regcred-harbor}]

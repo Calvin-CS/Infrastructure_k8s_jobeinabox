@@ -4,6 +4,7 @@ metadata:
   name: jobeinabox-{{ default "staging" .Release.Namespace }}
   namespace: {{ default "staging" .Release.Namespace }}
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
