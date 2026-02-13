@@ -27,8 +27,8 @@ spec:
             memory: "250Mi"
             cpu: "200m" #0.2 CPU
           limits:
-            memory: "1000Mi"
-            cpu: "1000m" #1 CPU
+            memory: "4000Mi"
+            cpu: "4000m" #4 CPU
         volumeMounts:
         - mountPath: /opt/R
           name: mountr
