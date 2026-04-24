@@ -14,7 +14,6 @@ spec:
       labels:
         app: jobeinabox-{{ default "staging" .Release.Namespace }}
       annotations:
-        releaseTime: {{ dateInZone "2006-01-02 15:04:05Z" (now) "UTC"| quote }}
         checksum/config: {{ include (print $.Template.BasePath "/jobeinabox-httproute.yaml") . | sha256sum }}
     spec:
       containers:
@@ -24,8 +23,8 @@ spec:
         - containerPort: 80
         resources:
           requests:
-            memory: "250Mi"
-            cpu: "200m" #0.2 CPU
+            memory: "1000Mi"
+            cpu: "500m" #0.5 CPU
           limits:
             memory: "4000Mi"
             cpu: "4000m" #4 CPU
@@ -75,19 +74,30 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: jobeinabox-{{ default "staging" .Release.Namespace }}
-  minReplicas: 1
-  maxReplicas: 4
+  minReplicas: {{ .Values.hpa.minReplicas }}
+  maxReplicas: {{ .Values.hpa.maxReplicas }}
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 75
+        averageUtilization: {{ .Values.hpa.targetCPUUtilizationPercentage }}
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 75
+        averageUtilization: {{ .Values.hpa.targetMemoryUtilizationPercentage }}
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: {{ .Values.hpa.behavior.scaleUp.stabilizationWindowSeconds }}
+      selectPolicy: {{ .Values.hpa.behavior.scaleUp.selectPolicy }}
+      policies:
+{{ toYaml .Values.hpa.behavior.scaleUp.policies | nindent 6 }}
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.hpa.behavior.scaleDown.stabilizationWindowSeconds }}
+      selectPolicy: {{ .Values.hpa.behavior.scaleDown.selectPolicy }}
+      policies:
+{{ toYaml .Values.hpa.behavior.scaleDown.policies | nindent 6 }}
 {{- end }}
