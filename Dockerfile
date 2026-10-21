@@ -9,7 +9,7 @@ ENV JAVA_VERSION=24
 ENV R_VERSION=4.4.2
 
 # Builddate
-ARG BUILDDATE=20251211-2
+ARG BUILDDATE=20261021-1
 
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL \
