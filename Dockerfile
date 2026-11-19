@@ -94,6 +94,8 @@ RUN python3 -m pip install exec-wrappers --break-system-packages && \
     rm /etc/apache2/sites-enabled/000-default.conf && \
     mv /000-jobe.conf /etc/apache2/sites-enabled/ && \
     sed -i 's/expose_php\ =\ On/expose_php\ =\ Off/g' /etc/php/8.3/cli/php.ini && \
+    # CVE-2026-126714 remediation: disable session upload progress tracking
+    sed -i 's/^;session.upload_progress.enabled = On/; CVE-2026-126714 remediation\nsession.upload_progress.enabled = 0/' /etc/php/8.3/apache2/php.ini && \
     mkdir -p /var/crash && \
     chmod 777 /var/crash && \
     echo '<!DOCTYPE html><html lang="en"><title>CodeRunnerSandbox</title><h3>Contact <a href='mailto:cpsc-admin@calvin.edu'>cpsc-admin@calvin.edu</a>.</h3></html>' > /var/www/html/index.html && \
